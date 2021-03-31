@@ -82,7 +82,7 @@ class ArticlesController < ApplicationController
     begin
       save_buffer
     rescue => e
-      logger.warn("Failed to save buffer, #{e.to_i}")
+      logger.warn("Failed to save buffer, #{e.to_s}")
     end
   end
 

@@ -1,0 +1,9 @@
+version: "3"
+services:
+  ruby:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.dev
+    volumes:
+      - ./module:/var/task
+    tty: true
