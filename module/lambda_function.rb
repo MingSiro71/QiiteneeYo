@@ -1,9 +1,13 @@
-def lambda_handler(event:, context:)
-  ENV["LAMBDA_WORKER"]="lambda"
-  ENV["RAILS_ENV"]="production"
-  # ENV["RAILS_ENV"]="test"
-  require_relative 'qiiteneeyo/config/environment'
-  require_relative 'qiiteneeyo/lib/tasks/make_draft'
+class LambdaFunction
+  def self.lambda_handler(event:, context:)
+    ENV["LAMBDA_WORKER"]="lambda"
+    ENV["RAILS_ENV"]="production"
+    require_relative 'qiiteneeyo/config/environment'
+    require_relative 'qiiteneeyo/lib/tasks/make_draft'
+    return { status: "OK", message: "nice!" }
+  end
 end
 
-lambda_handler(event:{}, context:{})
+if __FILE__==$0
+  LambdaFunction::lambda_handler(event:{}, context:{})
+end

@@ -7,5 +7,5 @@ ENTRYPOINT [ "/bin/bash" ]
 
 # Redefine below when upload to AWS Lambda
 # WORKDIR /var/task
-# ENTRYPOINT [ "/usr/local/bin/ruby" ]
-# CMD [ "/var/task/lambda_function.rb" ]
+# ENTRYPOINT [ "/var/task/bootstrap" ]
+# CMD [ "lambda_function.lambda_handler" ]

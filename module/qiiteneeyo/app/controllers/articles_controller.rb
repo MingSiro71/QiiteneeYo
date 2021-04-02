@@ -23,7 +23,7 @@ module ApiRequestProfile
     def available_max_per_page() 100 end
     def access_token() "Bearer #{ENV['QIITA_ACCESS_TOKEN']}" end
     def data_type() "application/json" end
-    def search_query() QueryRule::recent(2) end
+    def search_query() QueryRule::recent(7) end
     def possible_statuses() [200, 201, 204, 400, 401, 403, 404, 500] end
   end
 end
@@ -88,7 +88,9 @@ class ArticlesController < ApplicationController
 
   def upload
     logger.info("Upload start")
-    post_via_http @stock_buffer.to_draft.publish
+    stock_count = @stock_buffer ? @stock_buffer.size : nil
+    preserve_count = @preserve_buffer ? @preserve_buffer.size : nil
+    post_via_http @stock_buffer.to_draft.publish(stock_count: stock_count, preserve_count: preserve_count,)
   end
 
   private

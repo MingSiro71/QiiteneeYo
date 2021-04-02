@@ -1,0 +1,68 @@
+#!/usr/local/bin/ruby
+require 'net/http'
+require 'json'
+
+class EvalUnsafeError < StandardError
+end
+
+def eval_care(str)
+  unless str.match(/[a-zA-Z_]/)
+    raise EvalUnsafeError "Unsafe string is in handler name"
+  end
+end
+
+def to_camel(str)
+  str.split("_").map{|w| w[0] = w[0].upcase; w}.join
+end
+
+if ENV['_HANDLER'] && ENV['_HANDLER'].match(/[^.]*\.[^.]/)
+  function, handler = ENV['_HANDLER'].split(".")
+  eval_care function
+  eval_care handler
+else
+  function = "lambda_function"
+  handler = "lambda_handler"
+end
+taskroot = ENV['LAMBDA_TASK_ROOT'] || "/var/task" 
+host = ENV['AWS_LAMBDA_RUNTIME_API'] || "localhost"
+extention = 'rb'
+api_base_uri = '2018-06-01/runtime/invocation'
+
+# Initialization - load function handler
+require "#{taskroot}/#{function}.#{extention}"
+
+# Processing
+while true do
+  get_uri = URI.parse("http://#{host}/#{api_base_uri}/next")
+  trigger = Net::HTTP.get_response(get_uri)
+  obj = trigger.each do |key, val|
+    { key => val }
+  end
+
+  # Note that 'Net::http' alter each of keys to lowercase
+  begin
+    requestId = obj["lambda-runtime-aws-request-id"][0]
+    deadline = obj["lambda-runtime-deadline-ms"][0]
+    functionArn = obj["lambda-runtime-invoked-function-arn"][0]
+    traceId = obj["lambda-runtime-trace-id"][0]
+  rescue => e
+    puts "Unexpected header from AWS Lambda API"
+    puts "Error masseage: #{e.to_s}"
+  end
+
+  begin
+    eventData = JSON.parse(trigger.body)
+  rescue => e
+    puts "Unexpected body from AWS Lambda API"
+    puts "Error masseage: #{e.to_s}"
+  end
+  begin
+    result = eval("#{to_camel(function)}::#{handler}( event: eventData, context: {} )")
+  rescue => e
+    puts "Bootstrap catches exception: #{e.class.name} handler raises"
+    puts "Error masseage:  #{e.to_s}"
+  end
+
+  post_uri = URI.parse("http://#{host}/#{api_base_uri}/#{requestId}/response")
+  Net::HTTP.post_form(post_uri, { "message" => "OK" })
+end

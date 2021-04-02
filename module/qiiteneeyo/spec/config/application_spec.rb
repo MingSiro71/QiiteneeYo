@@ -1,4 +1,3 @@
-ENV['LAMBDA_WORKER']="lambda"
 require 'rails_helper'
 gem 'byebug'
 

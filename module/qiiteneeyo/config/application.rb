@@ -18,11 +18,17 @@ module Qiiteneeyo
     config.time_zone = "Tokyo"
 
     config.api_only = true
-    config.logger = ActiveSupport::Logger.new(Rails.root.join("log", "#{Rails.env}.log"))
+
+    # app_name = File.basename(File.expand_path("#{__dir__}/../"))
+
     if ENV['LAMBDA_WORKER']=="lambda"
-      stdout_logger = ActiveSupport::Logger.new(STDOUT)
-      broadcaster = ActiveSupport::Logger.broadcast(stdout_logger)
-      config.logger.extend(broadcaster)
+      # config.logger = ActiveSupport::Logger.new("/tmp/#{app_name}/log/#{Rails.env}.log")
+      # stdout_logger = ActiveSupport::Logger.new(STDOUT)
+      # broadcaster = ActiveSupport::Logger.broadcast(stdout_logger)
+      # config.logger.extend(broadcaster)
+      config.logger = ActiveSupport::Logger.new(STDOUT)
+    else
+      config.logger = ActiveSupport::Logger.new(Rails.root.join("log", "#{Rails.env}.log"))      
     end
     config.logger.formatter = proc do |severity, datetime, progname, message|
       "Level:#{severity}, Time:#{datetime}, Message:#{message}\n"
