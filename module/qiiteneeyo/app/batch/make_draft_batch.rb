@@ -3,5 +3,6 @@ class MakeDraftBatch < ApplicationBatch
     controller = ArticlesController.new
     controller.search
     controller.upload
+    controller.expire
   end
 end

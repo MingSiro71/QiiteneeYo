@@ -4,16 +4,13 @@ class ObjectBuffer
 
   def initialize
     super
-    clear
-  end
-
-  def clear
     @stream = []
   end
 
-  def append(value)
-    @stream.append value
-    value
+  def append(hash)
+    raise TypeError.new('required Hash') unless hash.class == Hash
+    @stream.append hash
+    hash
   end
 
   def size
@@ -23,6 +20,7 @@ class ObjectBuffer
   def store_local(path)
     file = File.open(path, 'w')
     file.write json_from_stream
+    true
   end
 
   def store_s3(path)
@@ -34,12 +32,13 @@ class ObjectBuffer
       key: path,
       body: json_from_stream
     )
+    true
   end
 
   def to_draft
     draft = Draft.new
-    draft.body = @stream.reduce("") do |acc, value|
-      acc << "## #{value['title']}\nURL: #{value['url']}\n[@#{value['user']}](https://qiita.com/#{value['user']})さん(Created at: #{value['created_at']})\n\n"
+    draft.body = @stream.reduce("") do |acc, line|
+      acc << Draft.section(line)
     end
     draft
   end
@@ -47,9 +46,5 @@ class ObjectBuffer
   private
   def json_from_stream
     JSON.dump @stream
-  end
-
-  def aws_config
-
   end
 end

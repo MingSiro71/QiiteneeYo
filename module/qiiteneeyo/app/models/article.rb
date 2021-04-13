@@ -7,12 +7,14 @@ class Article
   attribute :user
   attribute :created_at
   attribute :updated_at
-  validates :url, presence: true, on: :curate
-  validates :title, presence: true, on: :curate
-  validates :body, presence: true, on: :curate
-  validates :user, presence: true, on: :curate
-  validates :created_at, presence: true, on: :curate
-  validates :updated_at, presence: true, on: :curate
+  validates :url, presence: true
+  validates :title, presence: true
+  validates :body, presence: true
+  validates :user, presence: true
+  validates :created_at, presence: true
+  validates :updated_at, presence: true
+
+  attr_reader :dictionary_positive, :dictionary_negative
 
   def initialize(attributes={})
     super

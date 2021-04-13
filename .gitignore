@@ -50,3 +50,7 @@
 # Ignore vendor.
 vendor/
 !vendor/.keep
+
+# Ignore rspec.
+#/.rspec
+/module/qiiteneeyo/.rspec
