@@ -46,12 +46,13 @@ A. Yes or No. Table name is hard coded, but you can grep and overwrite it.
 Q. Should I make index?
 A. No. QiiteneeYo uses "scan" of sdk. Which uses no key.
 
-### Make policy and user
+### Make policy, role and user
 
 - Open Iam in AWS console
 - Select policy settings
 - Make new policy for access S3 bucket
 - Make new policy for access dynamoDB table
+- Make new role and attach these policy transplant the lambda resource specifyed policy
 - Make new group and attach these policy
 - Make new user in the group
 
@@ -96,19 +97,15 @@ Examples of policy for dynamoDB
             "Sid": "SpecificTable",
             "Effect": "Allow",
             "Action": [
-                "dynamodb:BatchGet*",
-                "dynamodb:DescribeStream",
+                "dynamodb:PutItem",
                 "dynamodb:DescribeTable",
-                "dynamodb:Get*",
-                "dynamodb:Query",
                 "dynamodb:Scan",
-                "dynamodb:BatchWrite*",
-                "dynamodb:CreateTable",
-                "dynamodb:Delete*",
-                "dynamodb:Update*",
-                "dynamodb:PutItem"
+                "dynamodb:Query"
             ],
-            "Resource": "arn:aws:dynamodb:::table/Posting"
+            "Resource": [
+                "arn:aws:dynamodb:*:*:table/Posting",
+                "arn:aws:dynamodb:*:*:table/Posting/index/*"
+            ]
         }
     ]
 }
@@ -169,9 +166,12 @@ docker push <resource name>
 - Overwrite Entrypoint to /var/task/bootstrap
 - Overwrite CMD to lambda_function.lambda_handler
 - Overwrite WORKDIR to /var/task
-- Select configure and click 'edit'
+- Select configure tab
+- In Function settings, click 'edit' button
 - Increase memory to 256
 - Increase timeout limit to 5 minutes
+- Open Permission settings
+- Set role to the one define in previous process
 - Test function with hello
 
 The test is expected to be well done.
@@ -197,4 +197,3 @@ So in the case of above, event runs
 
 - 8:55 in JST
 - Every friday
-

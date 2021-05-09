@@ -19,16 +19,10 @@ module Qiiteneeyo
 
     config.api_only = true
 
-    # app_name = File.basename(File.expand_path("#{__dir__}/../"))
-
     if ENV['LAMBDA_WORKER']=="lambda"
-      # config.logger = ActiveSupport::Logger.new("/tmp/#{app_name}/log/#{Rails.env}.log")
-      # stdout_logger = ActiveSupport::Logger.new(STDOUT)
-      # broadcaster = ActiveSupport::Logger.broadcast(stdout_logger)
-      # config.logger.extend(broadcaster)
-      config.logger = ActiveSupport::Logger.new(STDOUT)
+      config.logger = ActiveSupport::Logger.new($stdout)
     else
-      config.logger = ActiveSupport::Logger.new(Rails.root.join("log", "#{Rails.env}.log"))      
+      config.logger = ActiveSupport::Logger.new(Rails.root.join("log", "#{Rails.env}.log"))
     end
     config.logger.formatter = proc do |severity, datetime, progname, message|
       "Level:#{severity}, Time:#{datetime}, Message:#{message}\n"
