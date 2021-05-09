@@ -26,8 +26,8 @@ end
 module ApiRequestProfile
   class << self
     def base_url() "https://qiita.com/api/v2" end
-    def paging_max() 1 end
-    def available_max_per_page() 1 end
+    def paging_max() 50 end
+    def available_max_per_page() 100 end
     def access_token() "Bearer #{ENV['QIITA_ACCESS_TOKEN']}" end
     def data_type() "application/json" end
     def search_query() QueryRule::recent(7) end
